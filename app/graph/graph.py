@@ -6,18 +6,21 @@ from typing import Optional
 from datetime import datetime, timezone
  
 
-from langchain_openai import AzureChatOpenAI
+from openai import AzureOpenAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 
-
-
-
+from app.infra.llm import client
+from app.infra.config_models import CIBILDetails, CreditRiskSummary, MLScores, LoanHistory, RiskDecision, UnderwritingState
+from app.infra.cache import cache_get
+from app.ML.cibil import fetch_cibil
+from app.ML.pd import predict_credit_risk
+from app.infra.rl import check_rate_limit
 # ============================================================
 # 4. LANGGRAPH NODES
 # ============================================================
  
-llm = get_llm()
+llm = client
  
  
 def node_rate_limiter(state: UnderwritingState) -> dict:
@@ -203,3 +206,16 @@ def get_checkpointer():
         except (ImportError, Exception) as e:
             logging.warning(f"CosmosDB unavailable ({e}), using MemorySaver")
     return MemorySaver()
+
+
+if __name__=="__main__":
+
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    graph = build_graph()
+    graph = graph.compile()
+    png_data = graph.get_graph().draw_mermaid_png()
+    with open("graph.png", "wb") as f:
+        f.write(png_data)
+    print("Graph saved to graph.png")

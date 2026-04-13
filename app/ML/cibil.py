@@ -1,3 +1,5 @@
+
+from app.infra.config_models import CIBILDetails
 def fetch_cibil(person_id: str) -> CIBILDetails:
     """
     TODO: Implement real CIBIL/Experian API call.

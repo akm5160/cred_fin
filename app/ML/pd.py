@@ -1,3 +1,4 @@
+from app.infra.config_models import MLScores, UnderwritingState
 def predict_credit_risk(state: UnderwritingState) -> MLScores:
     """
     TODO: Implement ML scoring pipeline. Production components:
